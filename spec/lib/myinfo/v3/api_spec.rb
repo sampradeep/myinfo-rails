@@ -8,6 +8,40 @@ describe MyInfo::V3::Api do
     it { expect { api.params(nil) }.to raise_error(NotImplementedError) }
   end
 
+  describe '#path' do
+    let(:api) { described_class.new }
+
+    context 'with no gateway_path' do
+      before do
+        MyInfo.configure do |config|
+          config.gateway_url = nil
+        end
+      end
+
+      it 'should return empty' do
+        expect(api.path(true)).to eq('')
+      end
+    end
+
+    context 'with gateway_path' do
+      before do
+        MyInfo.configure do |config|
+          config.gateway_url = 'https://test_gateway_url.something/some/path'
+        end
+      end
+
+      after do
+        MyInfo.configure do |config|
+          config.gateway_url = nil
+        end
+      end
+
+      it 'should return valid path' do
+        expect(api.path(true)).to eq('some/path/')
+      end
+    end
+  end
+
   describe '#header' do
     before do
       MyInfo.configure do |config|

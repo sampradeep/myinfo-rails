@@ -14,7 +14,7 @@ module MyInfo
       def call
         super do
           headers = header(params: params).merge({ 'Content-Type' => 'application/x-www-form-urlencoded' })
-          response = http.request_post("/#{slug}", params.to_param, headers)
+          response = http.request_post("/#{slug(gateway: true)}", params.to_param, headers)
 
           parse_response(response)
         end
@@ -24,10 +24,10 @@ module MyInfo
         'POST'
       end
 
-      def slug
+      def slug(gateway: false)
         slug_prefix = config.public? ? 'com' : 'gov'
 
-        "#{slug_prefix}/v3/token"
+        "#{path(gateway)}#{slug_prefix}/v3/token"
       end
 
       def params

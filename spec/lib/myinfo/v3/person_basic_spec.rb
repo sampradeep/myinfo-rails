@@ -9,11 +9,34 @@ describe MyInfo::V3::PersonBasic do
   describe 'common methods' do
     let(:api) { described_class.new(nric_fin: 'S1234567A', txn_no: 'test') }
 
-    it { expect(api.slug).to eql('gov/v3/person-basic/S1234567A/') }
     it { expect(api.http_method).to eql('GET') }
     it { expect(api.txn_no).to eql('test') }
     it { expect(api.nric_fin).to eql('S1234567A') }
     it { expect(api.attributes).to eql(MyInfo::Attributes::DEFAULT_VALUES.join(',')) }
+  end
+
+  describe '#slug' do
+    let(:api) { described_class.new(nric_fin: 'S1234567A') }
+
+    context 'with gateway false' do
+      it 'should return just slug' do
+        expect(api.slug(gateway: false)).to eql('gov/v3/person-basic/S1234567A/')
+      end
+    end
+
+    context 'with gateway true' do
+      before do
+        MyInfo.configuration.gateway_url = 'https://test_gateway_url.something/something-else'
+      end
+
+      after do
+        MyInfo.configuration.gateway_url = nil
+      end
+
+      it 'should return slug along with gateway path' do
+        expect(api.slug(gateway: true)).to eql('something-else/gov/v3/person-basic/S1234567A/')
+      end
+    end
   end
 
   describe '#call' do

@@ -17,15 +17,15 @@ module MyInfo
       def call
         super do
           headers = header(params: params)
-          endpoint_url = "/#{slug}?#{params.to_query}"
+          endpoint_url = "/#{slug(gateway: true)}?#{params.to_query}"
 
           response = http.request_get(endpoint_url, headers)
           parse_response(response)
         end
       end
 
-      def slug
-        "gov/v3/person-basic/#{nric_fin}/"
+      def slug(gateway: false)
+        "#{path(gateway)}gov/v3/person-basic/#{nric_fin}/"
       end
 
       def support_gzip?
